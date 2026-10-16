@@ -1,0 +1,24 @@
+sequenceDiagram
+  participant W as WorkflowEngine
+  participant A as AgentOrchestrator
+  participant L as LlmClient
+  participant P as Model Provider
+  participant D as ToolDispatcher
+  participant B as OrderQueryService
+  participant DB as MySQL
+  W->>A: 恢复 AgentContext
+  A->>L: 消息与只读工具 JSON Schema
+  L->>P: 原生工具调用请求
+  P-->>L: tool_calls 含 callId 名称 参数
+  L-->>A: 强类型响应
+  A->>DB: 保存 agent_message 与 agent_tool_call
+  A->>D: 可信客户范围与参数
+  D->>D: schema 权限 预算 超时校验
+  D->>B: 查询并校验订单归属
+  B-->>D: 结构化结果
+  D-->>A: ToolResult 含 code data retryable
+  A->>DB: 保存脱敏轨迹与恢复游标
+  A->>L: 按 callId 回填 tool result
+  L->>P: 下一轮模型请求
+  P-->>A: 结构化建议
+  A-->>W: 校验后的 ProposedAction

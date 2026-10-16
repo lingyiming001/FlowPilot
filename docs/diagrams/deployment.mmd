@@ -1,0 +1,12 @@
+flowchart TB
+  Browser[浏览器 localhost:18080] --> Front[frontend Nginx 容器]
+  subgraph Compose[flowpilot Docker Compose 私有网络]
+    Front --> Backend[backend Java 21 Spring Boot]
+    Backend --> MySQL[mysql:8.4]
+    Backend --> Redis[redis:7-alpine]
+    Prometheus[可选 prometheus] --> Backend
+    MySQL --> Data[(mysql-data 持久卷)]
+    Redis --> Cache[(redis-data 持久卷)]
+  end
+  Backend --> LLM[Fake LLM 或真实模型 Provider]
+  Backend --> Gate[Mock 或真实 SMTP IMAP 业务网关]

@@ -1,0 +1,18 @@
+groups:
+  - name: flowpilot
+    rules:
+      - alert: FlowPilotUnknownExternalOperation
+        expr: flowpilot_operations_unknown > 0
+        for: 1m
+        labels: {severity: critical}
+        annotations: {summary: "存在外部执行结果未知的操作，请核对，禁止盲目重发"}
+      - alert: FlowPilotTaskBacklog
+        expr: flowpilot_tasks_pending > 50
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "FlowPilot 持久化任务积压"}
+      - alert: FlowPilotUnresolvedFailures
+        expr: flowpilot_tasks_failed > 0
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "FlowPilot 存在未处理异常任务"}

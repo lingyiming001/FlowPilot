@@ -1,0 +1,341 @@
+erDiagram
+  sys_user {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar username
+    varchar password_hash
+    varchar display_name
+    varchar team_id
+    boolean enabled
+  }
+  sys_role {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar code
+    varchar name
+  }
+  sys_permission {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar code
+    varchar name
+  }
+  sys_user_role {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar user_id
+    varchar role_id
+  }
+  sys_role_permission {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar role_id
+    varchar permission_id
+  }
+  customer {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar team_id
+    varchar name
+    text email_cipher
+    varchar email_hash
+  }
+  customer_identity {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar customer_id
+    varchar identity_hash
+    boolean verified
+  }
+  customer_order {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar team_id
+    varchar customer_id
+    varchar status
+    decimal total
+    char currency
+    text address_cipher
+    varchar product_name
+  }
+  order_item {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar order_id
+    varchar product_name
+    int quantity
+    decimal unit_price
+  }
+  order_operation {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar order_id
+    varchar operation_type
+    varchar execution_id
+    varchar result_status
+  }
+  mail_account {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar team_id
+    varchar name
+    varchar credentials_ref
+    boolean enabled
+  }
+  mail_message {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar team_id
+    varchar customer_id
+    varchar account_id
+    varchar message_id
+    varchar subject
+    mediumtext body_cipher
+    varchar sender_hash
+    boolean identity_verified
+    varchar status
+  }
+  mail_attachment {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar mail_id
+    varchar filename
+    bigint size_bytes
+    varchar storage_key
+  }
+  mail_processing_record {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar mail_id
+    varchar status
+    varchar summary
+  }
+  agent_session {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar workflow_id
+    varchar provider
+    varchar prompt_version
+  }
+  agent_message {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar workflow_id
+    int sequence_no
+    varchar role
+    mediumtext content_cipher
+  }
+  agent_tool_call {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar workflow_id
+    varchar call_id
+    varchar name
+    json arguments_json
+    json result_json
+    varchar status
+    bigint duration_ms
+    varchar error_code
+  }
+  agent_proposal {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar workflow_id
+    varchar action_type
+    varchar target_id
+    mediumtext snapshot_cipher
+    char digest
+    int proposal_version
+    varchar risk_level
+  }
+  workflow_instance {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar team_id
+    varchar mail_id
+    varchar customer_id
+    varchar state
+    varchar intent
+    varchar error_code
+    datetime deadline
+  }
+  workflow_transition_log {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar workflow_id
+    varchar from_state
+    varchar to_state
+    varchar summary
+  }
+  workflow_task {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar workflow_id
+    varchar task_type
+    varchar status
+    int attempts
+    datetime next_run_at
+    varchar lease_owner
+    datetime lease_until
+    bigint fencing_token
+    json payload_json
+  }
+  workflow_context {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar workflow_id
+    mediumtext context_cipher
+  }
+  approval_request {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar team_id
+    varchar workflow_id
+    varchar proposal_id
+    varchar action_type
+    varchar target_id
+    char snapshot_digest
+    varchar status
+    varchar requested_by
+    varchar required_role
+    datetime expires_at
+  }
+  approval_record {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar approval_id
+    varchar actor_id
+    varchar decision
+    varchar comment
+    char snapshot_digest
+  }
+  audit_log {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar team_id
+    varchar workflow_id
+    varchar actor_id
+    varchar event_type
+    varchar summary
+  }
+  operation_execution {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar workflow_id
+    varchar approval_id
+    varchar action_type
+    varchar idempotency_key
+    varchar status
+    varchar provider_request_id
+    json result_json
+    datetime last_checked_at
+  }
+  integration_request_log {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar idempotency_key
+    varchar adapter
+    varchar operation
+    varchar status
+    json result_json
+  }
+  failed_task {
+    varchar id PK
+    datetime created_at
+    datetime updated_at
+    int version
+    varchar workflow_id
+    varchar task_id
+    varchar team_id
+    varchar error_code
+    varchar summary
+    boolean resolved
+  }
+  agent_round_checkpoint {
+    varchar id PK
+    varchar workflow_id
+    int round_no
+    mediumtext reply_cipher
+    datetime created_at
+  }
+  sys_user ||--o{ sys_user_role : references
+  sys_role ||--o{ sys_user_role : references
+  sys_role ||--o{ sys_role_permission : references
+  sys_permission ||--o{ sys_role_permission : references
+  customer ||--o{ customer_identity : references
+  customer ||--o{ customer_order : references
+  customer_order ||--o{ order_item : references
+  customer_order ||--o{ order_operation : references
+  customer ||--o{ mail_message : references
+  mail_account ||--o{ mail_message : references
+  mail_message ||--o{ mail_attachment : references
+  mail_message ||--o{ mail_processing_record : references
+  mail_message ||--o{ workflow_instance : references
+  workflow_instance ||--o{ agent_session : references
+  workflow_instance ||--o{ agent_message : references
+  workflow_instance ||--o{ agent_tool_call : references
+  workflow_instance ||--o{ agent_proposal : references
+  workflow_instance ||--o{ agent_round_checkpoint : references
+  workflow_instance ||--o{ workflow_task : references
+  workflow_instance ||--o{ workflow_context : references
+  workflow_instance ||--o{ workflow_transition_log : references
+  workflow_instance ||--o{ approval_request : references
+  agent_proposal ||--o{ approval_request : references
+  approval_request ||--o{ approval_record : references
+  approval_request ||--o{ operation_execution : references
+  workflow_instance ||--o{ failed_task : references
+  workflow_instance ||--o{ audit_log : references

@@ -1,0 +1,78 @@
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+spring:
+  application:
+    name: flowpilot
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:13306/flowpilot?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&connectionTimeZone=UTC}
+    username: ${DB_USERNAME:flowpilot}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      connection-init-sql: "SET time_zone = '+00:00'"
+  flyway:
+    enabled: true
+  jackson:
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:16379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2s
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 15000
+      mail.smtp.writetimeout: 15000
+flowpilot:
+  encryption-key: ${ENCRYPTION_KEY}
+  jwt-secret: ${JWT_SECRET}
+  bootstrap-enabled: ${BOOTSTRAP_ENABLED:false}
+  bootstrap-username: ${BOOTSTRAP_USERNAME:admin}
+  bootstrap-password: ${BOOTSTRAP_PASSWORD:}
+  bootstrap-team: ${BOOTSTRAP_TEAM:team-default}
+  demo-enabled: ${DEMO_ENABLED:false}
+  demo-password: ${DEMO_PASSWORD:}
+  llm-mode: ${LLM_MODE:fake}
+  integration-mode: ${INTEGRATION_MODE:mock}
+  llm-base-url: ${LLM_BASE_URL:https://api.openai.com}
+  llm-api-key: ${LLM_API_KEY:}
+  llm-model: ${LLM_MODEL:gpt-4.1-mini}
+  gateway-url: ${GATEWAY_URL:}
+  gateway-token: ${GATEWAY_TOKEN:}
+  imap-enabled: ${IMAP_ENABLED:false}
+  imap-host: ${IMAP_HOST:}
+  imap-port: ${IMAP_PORT:993}
+  imap-account-id: ${IMAP_ACCOUNT_ID:}
+  identity-verifier-url: ${IDENTITY_VERIFIER_URL:}
+  auto-analyze-enabled: ${AUTO_ANALYZE_ENABLED:false}
+management:
+  health:
+    mail:
+      enabled: ${MAIL_HEALTH_ENABLED:false}
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+logging:
+  level:
+    root: INFO
+    org.springframework.ai: WARN
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

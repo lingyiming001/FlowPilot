@@ -1,0 +1,16 @@
+flowchart TD
+  Start[WorkflowRecoveryService 定时扫描] --> Lease{任务租约过期?}
+  Lease -->|否| Pending[等待 next_run_at]
+  Lease -->|是| Fence[递增 fencing_token 并回收租约]
+  Fence --> Write{已有 operation_execution?}
+  Write -->|否| Resume[WorkflowEngine 恢复轮次检查点与上下文]
+  Resume --> Cached{已有工具结果?}
+  Cached -->|是| Reuse[复用 callId 与结果]
+  Cached -->|否| Read[ToolDispatcher 受控只读查询]
+  Write -->|是| Lookup[ToolExecutionService 按原幂等键核对]
+  Lookup --> Result{外部明确结果?}
+  Result -->|成功| Apply[本地幂等记账与独立通知审批]
+  Result -->|明确失败| Manual[MANUAL_REVIEW]
+  Result -->|未知或查不到| Manual
+  Pending --> Approval{等待审批超时?}
+  Approval -->|是| Expire[旧审批失效并转人工]

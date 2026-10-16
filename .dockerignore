@@ -1,0 +1,8 @@
+.git
+.agents
+**/node_modules
+**/.env
+.env
+deploy/env/ACCESS.local.md
+**/surefire-reports
+**/*.log

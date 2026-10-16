@@ -1,0 +1,30 @@
+sequenceDiagram
+  participant W as WorkflowEngine
+  participant A as ApprovalService
+  participant U as 已认证审批人
+  participant E as ToolExecutionService
+  participant P as ExecutionPolicyService
+  participant O as OrderOperationService
+  participant G as RefundGateway
+  participant D as MySQL
+  W->>A: 保存不可变退款操作快照
+  A->>D: 审批请求与摘要
+  U->>W: approve(id, expectedVersion)
+  W->>A: 审批角色 数据范围 有效期 CAS
+  A->>D: 审批记录 + 审批状态
+  W->>D: APPROVED + 执行任务 + 审计（同一事务）
+  W->>E: 调度执行任务
+  E->>P: 重验有效审批 快照 资源 当前权限
+  E->>O: 重新检查归属 状态 退款资格
+  E->>D: 唯一幂等执行记录 PREPARED
+  E->>G: refund(持久化幂等键)
+  alt 明确成功
+    G-->>E: providerRequestId 与结果
+    E->>D: 成功记录 订单状态 审计 下一任务
+    E->>W: GENERATING_PROPOSAL 客户通知
+    W->>A: 新建邮件发送审批（独立授权）
+  else 超时或结果未知
+    E->>D: UNKNOWN + 核对任务
+    E->>G: 按幂等键查询原执行结果
+    E->>W: 不能核对则 MANUAL_REVIEW
+  end

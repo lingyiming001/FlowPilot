@@ -1,0 +1,9 @@
+FROM eclipse-temurin:21-jre AS runtime
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/* && useradd --system --uid 10001 flowpilot
+WORKDIR /app
+USER 10001
+
+FROM runtime AS application
+COPY --chown=10001:10001 flowpilot/app/target/app-1.0.0.jar /app/flowpilot.jar
+EXPOSE 8080
+ENTRYPOINT ["java","-XX:MaxRAMPercentage=55","-XX:MaxDirectMemorySize=32m","-jar","/app/flowpilot.jar"]

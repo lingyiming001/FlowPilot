@@ -1,0 +1,17 @@
+package com.flowpilot.workflow.enums;
+
+public enum WorkflowState {
+  RECEIVED,
+  ANALYZING,
+  QUERYING_TOOLS,
+  GENERATING_PROPOSAL,
+  WAITING_APPROVAL,
+  APPROVED,
+  REJECTED,
+  EXECUTING,
+  COMPLETED,
+  FAILED,
+  RETRY_PENDING,
+  MANUAL_REVIEW,
+  CANCELLED
+}

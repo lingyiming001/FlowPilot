@@ -1,0 +1,25 @@
+flowchart TB
+  Browser[flowpilot-web React] --> Nginx[Nginx]
+  Nginx --> API[app REST API 与 SSE]
+  subgraph Monolith[flowpilot 单一 Spring Boot 应用]
+    API --> Security[security 身份与数据范围]
+    API --> Mail[mail 邮件服务]
+    API --> Approval[approval 审批服务]
+    API --> Workflow[workflow WorkflowEngine]
+    Workflow --> Agent[agent AgentOrchestrator]
+    Agent --> ReadTools[ToolDispatcher 只读工具]
+    ReadTools --> Order[order 与 customer]
+    Approval --> Workflow
+    Workflow --> Executor[ToolExecutionService 安全执行]
+    Executor --> Order
+    Executor --> Integration[integration 外部适配]
+    Mail --> Integration
+    Agent --> LLM[LlmClient]
+    Workflow --> Audit[audit AuditService]
+    Executor --> Audit
+  end
+  LLM --> Provider[可配置模型 Provider]
+  Integration --> External[IMAP SMTP 物流 退款系统]
+  Monolith --> DB[(MySQL 8.4 权威状态)]
+  Monolith --> Redis[(Redis 缓存与限流)]
+  Prometheus[Prometheus] --> API
