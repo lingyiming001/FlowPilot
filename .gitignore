@@ -13,6 +13,6 @@ node_modules/
 flowpilot-web/dist/
 *.log
 *.pid
-
+.idea/
 *.tsbuildinfo
 deploy/env/ACCESS.local.md
