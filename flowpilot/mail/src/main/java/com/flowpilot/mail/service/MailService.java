@@ -7,6 +7,5 @@ public interface MailService {
 
   Map<String, Object> detail(String id, String team);
 
-  String receive(
-      String account, String messageId, String from, String subject, String body, boolean trusted);
+  String receive(String account, String messageId, String from, String subject, String body, boolean trusted);
 }
